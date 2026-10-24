@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>{{ student }} — {{ assignment }}</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 24px; color: #222; }
+  h1 { font-size: 20px; }
+  .back { margin-bottom: 12px; display: inline-block; }
+  .page { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .page img { width: 100%; border: 1px solid #ddd; background: #fff; }
+  .page .label { font-size: 12px; color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  table.q { border-collapse: collapse; width: 100%; margin-top: 12px; }
+  table.q th, table.q td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: top; }
+  table.q th { background: #f7f7f7; font-weight: 600; }
+  .verdict-correct { color: #0a7a28; font-weight: 600; }
+  .verdict-partial { color: #b57200; font-weight: 600; }
+  .verdict-incorrect { color: #b00; font-weight: 600; }
+  pre.feedback { background: #f7f7f7; padding: 12px; border-radius: 6px; white-space: pre-wrap; }
+  .overall { margin: 12px 0 24px; padding: 12px; background: #f0f7ff; border-left: 4px solid #0a66c2; border-radius: 4px; }
+</style>
+</head>
+<body>
+<a class="back" href="/">&larr; back to all students</a>
+<h1>{{ student }}</h1>
+
+{% if response %}
+<div class="overall">
+  <strong>{{ response.student_identifier }}</strong> —
+  {{ response.overall_score }}/{{ response.overall_possible }}
+  &nbsp;·&nbsp;
+  <em>{{ response.overall_feedback }}</em>
+</div>
+{% endif %}
+
+{% for pg in pages %}
+<h2>Page {{ pg.page }}</h2>
+<div class="page">
+  <div>
+    <div class="label">Original</div>
+    {% if pg.original %}
+      <img src="/image/{{ student }}/{{ pg.original }}" />
+    {% endif %}
+  </div>
+  <div>
+    <div class="label">Graded</div>
+    {% if pg.marked %}
+      <img src="/image/{{ student }}/{{ pg.marked }}" />
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+{% if response and response.questions %}
+<h2>Per-question feedback</h2>
+<table class="q">
+  <thead>
+    <tr>
+      <th>Q</th>
+      <th>Verdict</th>
+      <th>Points</th>
+      <th>Feedback</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for q in response.questions %}
+    <tr>
+      <td>
+        Q{{ q.question_id }}
+        {% if q.parent_id %}<span style="color:#888;font-size:11px;"> (of Q{{ q.parent_id }})</span>{% endif %}
+      </td>
+      <td class="verdict-{{ q.verdict }}">{{ q.verdict }}</td>
+      <td>{{ q.points_earned }}/{{ q.points_possible }}</td>
+      <td>{{ q.feedback }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if feedback %}
+<h2>Full feedback</h2>
+<pre class="feedback">{{ feedback }}</pre>
+{% endif %}
+</body>
+</html>

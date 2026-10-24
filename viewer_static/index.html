@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Grading results — {{ assignment }}</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 24px; color: #222; }
+  h1 { font-size: 20px; }
+  table { border-collapse: collapse; width: 100%; max-width: 720px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee; }
+  th { background: #f7f7f7; font-weight: 600; }
+  tr.failed td { color: #b00; }
+  a { color: #0a66c2; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .pct { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<h1>Grading results — <code>{{ assignment }}</code></h1>
+
+{% if rows %}
+<table>
+  <thead>
+    <tr><th>Student</th><th>Score</th><th>Percentage</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr class="{{ 'failed' if r.status != 'complete' else '' }}">
+      <td>
+        {% if r.status == 'complete' %}
+          <a href="/student/{{ r.student }}">{{ r.student }}</a>
+        {% else %}
+          {{ r.student }}
+        {% endif %}
+      </td>
+      <td>{{ r.score }}{% if r.possible %}/{{ r.possible }}{% endif %}</td>
+      <td class="pct">{% if r.percentage %}{{ r.percentage }}%{% endif %}</td>
+      <td>{{ r.status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No results yet. Run <code>python grade.py assignments/&lt;name&gt;/</code> first.</p>
+{% endif %}
+</body>
+</html>
